@@ -114,6 +114,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://crud-django-production.up.railway.app'
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
