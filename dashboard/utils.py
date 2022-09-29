@@ -1,10 +1,10 @@
 from django import forms
 
-from dashboard.models import Categorias
+from dashboard.models import Categorias, Productos
 
 class ValidacionProducto(forms.ModelForm):
     class Meta:
-        model = Categorias
+        model = Productos
         fields= '__all__'
     """ id = forms.IntegerField()
     producto = forms.CharField(max_length=40, strip=True, min_length=1)
