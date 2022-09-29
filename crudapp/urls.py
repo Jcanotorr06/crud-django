@@ -1,21 +1,25 @@
-"""crudapp URL Configuration
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
+from django import views
 from django.contrib import admin
 from django.urls import path
+from dashboard import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    #Inicio
+    path('', views.inicio, name="inicio"),
+    #Añadir Producto
+    path('add_producto', views.add_producto, name="add_producto"),
+    #Editar Producto
+    path('editar_producto', views.editar_producto, name="editar_producto"),
+    #Eliminar Producto
+    path('eliminar_producto', views.eliminar_producto, name="eliminar_producto"),
+    #Detalles de Producto
+    path('producto/<int:id_producto>', views.producto, name="producto"),
+    #Ver Categorias
+    path('categorias', views.categorias, name="categorias"),
+    #Editar Categorias
+    path('editar_categorias', views.editar_categorias, name="editar_categorias"),
+    #Eliminar Categorias
+    path('eliminar_categorias', views.eliminar_categorias, name="eliminar_categorias"),
 ]
