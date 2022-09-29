@@ -1,32 +1,122 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="w-100 p-2 row">
-        <table class="table table-bordered table-sm text-center fs-6">
+    <div class="w-100 p-2 row g-3" x-data="{newRow: false, categoria: '', ruta: '/add_categorias', id: null, titulo: ''}">
+        <div class="text-end w-100 col-12">
+            <button class="btn btn-outline-secondary btn-sm" @click="newRow = true;ruta = '/add_categorias';categoria='';titulo = 'Añadir Categoria'" :disabled="newRow" data-bs-toggle="modal" data-bs-target="#añadirCategoria">
+                <i class="bi bi-plus"></i>&nbsp;
+                Añadir Categoria
+            </button>
+        </div>
+        <table class="table table-striped table-bordered table-sm text-center fs-6">
             <thead class="table-warning">
                 <tr>
                     <th>Id</th>
-                    <th>Categoria</th>
+                    <th class="text-start">Categoria</th>
                     <th colspan="2">Acciones</th>
                 </tr>
             </thead>
             {% for categoria in categorias %}
                 <tr>
                     <td>{{ categoria.id }}</td>
-                    <td>{{ categoria.categoria }}</td>
+                    <td class="text-start">{{ categoria.categoria }}</td>
                     <td>
-                        <a href="/" class="btn btn-warning">
-                            <i class="bi bi-pencil-square"></i>
-                        </a>
+                        <span data-bs-toggle="tooltip" data-bs-title="Editar Categoria">
+                            <button 
+                                class="btn btn-warning" 
+                                @click="categoria = '{{categoria.categoria}}'; id='{{categoria.id}}'; ruta='/editar_categorias';titulo = 'Editar Categoria'" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#añadirCategoria" >
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                        </span>
                     </td>
                     <td>
-                        <a href="/" class="btn btn-danger">
-                            <i class="bi bi-trash-fill"></i>
-                        </a>
+                        <span data-bs-toggle="tooltip" data-bs-title="Eliminar Categoria">
+                            <button 
+                                class="btn btn-danger"
+                                @click="categoria = '{{categoria.categoria}}'; id='{{categoria.id}}';"
+                                data-bs-toggle="modal"
+                                data-bs-target="#eliminarCategoria">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </span>
                     </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="9" class="text-center py-3"><i class="bi bi-emoji-frown"></i>&nbsp; No hay categorias</td>
                 </tr>
             {% endfor %}
         </table>
+        <div class="modal fade" id="añadirCategoria" tabindex="-1">
+            <div class="modal-dialog">
+                <form 
+                    {% block action %} :action="ruta" {% endblock action %}
+                    method="POST"
+                    enctype="multipart/form-data"
+                    autocomplete="off"
+                    class="modal-content">
+                    {% csrf_token %}
+                    {% block valor_id %}{% endblock valor_id %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" x-text="titulo"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" @click="newRow = false; categoria = ''; id = null;"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            <template x-if="id">
+                                <input type="hidden" :value="id" name="id">
+                            </template>
+                            <label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label>
+                            <input 
+                                type="text" 
+                                name="categoria" 
+                                class="form-control" 
+                                placeholder="Ingrese el nombre de la categoria"
+                                x-model="categoria"
+                                maxlength="40"
+                                required
+                                {% block valor_categoria %}{% endblock valor_categoria %}>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="newRow = false">Cancelar</button>
+                        <button type="submit" class="btn btn-success" :disabled="categoria.length < 1">Aceptar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="modal fade" id="eliminarCategoria" aria-hidden="true" tabindex="-1">
+            <div class="modal-dialog">
+                <form 
+                    action="eliminar_categorias"
+                    class="modal-content"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    autocomplete="off">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="">Eliminar Categoria</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <span>Estas seguro que deseas eliminar la categoria: </span>
+                        <span class="fw-semibold" x-text="categoria"></span>
+                        <template x-if="id">
+                            <input type="hidden" :value="id" name="id">
+                        </template>
+                        <template x-if="categoria">
+                            <input type="hidden" name="categoria" :value="categoria">
+                        </template>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="newRow = false">Cancelar</button>
+                        <button type="submit" class="btn btn-success" :disabled="categoria.length < 1">Aceptar</button>
+                    </div>
+                </form>
+            </div>
+          </div>
         
     </div>
 {% endblock content %}
