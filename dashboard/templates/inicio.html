@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="w-100 p-2 row g-3">
+        <div class="text-end w-100 col-12">
+            <a href={% url 'add_producto' %} class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-plus"></i>&nbsp;
+                Añadir Producto
+            </a>
+        </div>
+        <div class="col-12">
+            <table class="table table-bordered table-sm text-center fs-6">
+                <thead class="table-warning">
+                    <tr>
+                        <th>Id</th>
+                        <th>Producto</th>
+                        <th class="w-25 text-nowrap overflow-hidden">Descripcion</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Ventas</th>
+                        <th>Creacion</th>
+                        <th>Categoria</th>
+                        <th colspan="2">Acciones</th>
+                    </tr>
+                </thead>
+                {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.id }}</td>
+                        <td>{{ producto.producto }}</td>
+                        <td class="overflow-hidden text-nowrap">{{ producto.descripcion }}</td>
+                        <td>{{ producto.cantidad }}</td>
+                        <td>{{ producto.precio }}</td>
+                        <td>{{ producto.ventas }}</td>
+                        <td>{{ producto.creacion | date:'Y/m/d (H:i)' }}</td>
+                        <td>{{ producto.categoria}}</td>
+                        <td>
+                            <a href="/" class="btn btn-warning">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                        </td>
+                        <td>
+                            <a href="/" class="btn btn-danger">
+                                <i class="bi bi-trash-fill"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock content %}
