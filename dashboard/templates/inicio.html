@@ -1,25 +1,33 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <div class="w-100 p-2 row g-3">
+    <div 
+        class="w-100 p-2 row g-3" 
+        x-data="{newRow: false, producto: '', descripcion:'', qty:0, precio:0, ventas:0, categoria:null, ruta: '/add_producto', id: null, titulo: ''}"
+        x-effect="console.log('id: ', id, 'categoria: ', categoria)">
         <div class="text-end w-100 col-12">
-            <a href={% url 'add_producto' %} class="btn btn-outline-secondary btn-sm">
+            <button 
+                class="btn btn-outline-secondary btn-sm" 
+                @click="newRow = true; titulo='Añadir Producto'; ruta='/add_producto'"
+                data-bs-toggle="modal" 
+                data-bs-target="#modalProducto"
+            >
                 <i class="bi bi-plus"></i>&nbsp;
                 Añadir Producto
-            </a>
+            </button>
         </div>
-        <div class="col-12">
+        <div class="col-12 table-responsive">
             <table class="table table-bordered table-sm text-center fs-6">
                 <thead class="table-warning">
                     <tr>
-                        <th>Id</th>
-                        <th>Producto</th>
+                        <th class="w-auto">Id</th>
+                        <th class="w-auto">Producto</th>
                         <th class="w-25 text-nowrap overflow-hidden">Descripcion</th>
                         <th>Cantidad</th>
-                        <th>Precio</th>
+                        <th>$ Precio</th>
                         <th>Ventas</th>
                         <th>Creacion</th>
-                        <th>Categoria</th>
+                        <th class="w-25">Categoria</th>
                         <th colspan="2">Acciones</th>
                     </tr>
                 </thead>
@@ -28,24 +36,143 @@
                         <td>{{ producto.id }}</td>
                         <td>{{ producto.producto }}</td>
                         <td class="overflow-hidden text-nowrap">{{ producto.descripcion }}</td>
-                        <td>{{ producto.cantidad }}</td>
-                        <td>{{ producto.precio }}</td>
+                        <td>{{ producto.qty }}</td>
+                        <td>$ {{ producto.precio }}</td>
                         <td>{{ producto.ventas }}</td>
                         <td>{{ producto.creacion | date:'Y/m/d (H:i)' }}</td>
                         <td>{{ producto.categoria}}</td>
                         <td>
-                            <a href="/" class="btn btn-warning">
+                            <button 
+                                class="btn btn-warning"
+                                @click="id='{{ producto.id }}';producto='{{ producto.producto }}';descripcion='{{ producto.descripcion }}';qty='{{ producto.qty }}';precio='{{ producto.precio }}';ventas='{{ producto.ventas }}';ruta='/editar_producto';titulo = 'Editar Producto'" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#modalProducto">
                                 <i class="bi bi-pencil-square"></i>
-                            </a>
+                            </button>
                         </td>
                         <td>
-                            <a href="/" class="btn btn-danger">
+                            <btn 
+                                class="btn btn-danger"
+                                @click="id='{{ producto.id }}';producto='{{ producto.producto }}'"
+                                data-bs-toggle="modal"
+                                data-bs-target="#eliminarProducto">
                                 <i class="bi bi-trash-fill"></i>
-                            </a>
+                            </btn>
                         </td>
                     </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-3"><i class="bi bi-emoji-frown"></i>&nbsp; No hay productos</td>
+                    </tr>
                 {% endfor %}
+                
             </table>
+
+            <div class="modal fade" id="modalProducto" tabindex="-1">
+                <div class="modal-dialog modal-xl">
+                    <form 
+                        {% block action %} :action="ruta" {% endblock action %}
+                        method="POST"
+                        enctype="multipart/form-data"
+                        autocomplete="off"
+                        class="modal-content">
+                        {% csrf_token %}
+                        {% block valor_id %}{% endblock valor_id %}
+                        <div class="modal-header">
+                            <h5 class="modal-title" x-text="titulo"></h5>
+                            <button 
+                                type="button" 
+                                class="btn-close" 
+                                data-bs-dismiss="modal" 
+                                @click="newRow = false; producto = ''; id = null;descripcion=''; qty=0; precio=0; ventas=0; categoria=null"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row g-2">
+                                <template x-if="id">
+                                    <input type="hidden" :value="id" name="id">
+                                </template>
+                                <div class="col-12">
+                                    <label for="producto" class="form-label">Nombre del Producto <span class="text-danger">*</span></label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" name="producto" x-model="producto" maxlength="40" required placeholder="Introduzca el nombre del producto">
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label for="qty" class="form-label">Cantidad <span class="text-danger">*</span></label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text"><i class="bi bi-stack"></i></span>
+                                        <input class="form-control" type="number" name="qty" min="0" x-model="qty" required>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label for="precio" class="form-label">Precio <span class="text-danger">*</span></label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text"><i class="bi bi-cash-coin"></i></span>
+                                        <input class="form-control" type="number" name="precio" step=".01" x-model="precio" min="0" required>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <label for="ventas" class="form-label">Ventas <span class="text-danger">*</span></label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text"><i class="bi bi-graph-up-arrow"></i></span>
+                                        <input class="form-control" type="number" name="ventas" x-model="ventas" min="0" required>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="categoria" class="form-label">Categoria <span class="text-danger">*</span></label>
+                                    <div class="input-group mb-3">
+                                        <select class="form-select" name="categoria" x-model="categoria" required>
+                                            <option selected hidden>Escoje una categoria</option>
+                                            {% for categoria in categorias %}
+                                                <option :value="{{categoria.id}}">{{categoria.categoria}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <label for="descripcion" class="form-label">Descripcion del Producto <span class="text-danger">*</span></label>
+                                    <div class="input-group mb-3">
+                                        <textarea class="form-control" x-model="descripcion" name="descripcion" rows="4" maxlength="200" required></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="newRow = false">Cancelar</button>
+                            <button type="submit" class="btn btn-success" :disabled="producto.length < 1 || descripcion.length < 1 || !categoria || isNaN(qty) || isNaN(precio) || isNaN(ventas)">Aceptar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% comment %} Modal para eliminar Productos {% endcomment %}
+            <div class="modal fade" id="eliminarProducto" aria-hidden="true" tabindex="-1">
+                <div class="modal-dialog">
+                    <form 
+                        action="eliminar_producto"
+                        class="modal-content"
+                        method="POST"
+                        enctype="multipart/form-data"
+                        autocomplete="off">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="">Eliminar Producto</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <span>Estas seguro que deseas eliminar el producto: </span>
+                            <span class="fw-semibold" x-text="producto"></span>
+                            <template x-if="id">
+                                <input type="hidden" :value="id" name="id">
+                            </template>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="newRow = false">Cancelar</button>
+                            <button type="submit" class="btn btn-success" :disabled="producto.length < 1 || !id">Aceptar</button>
+                        </div>
+                    </form>
+                </div>
+              </div>
         </div>
     </div>
 {% endblock content %}
