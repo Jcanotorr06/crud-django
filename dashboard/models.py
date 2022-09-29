@@ -1,15 +1,12 @@
 from django.db import models
 
 class Categorias(models.Model):
-    id = models.IntegerField(primary_key=True)
     categoria = models.CharField(max_length=40, null=False, blank=False, default=None)
     
     def __str__(self):
         return self.categoria
 
 class Productos(models.Model):
-    
-    id = models.IntegerField(primary_key=True)
     producto = models.CharField(max_length=40, null=False, blank=False)
     descripcion = models.TextField(null=False, blank=False)
     qty = models.PositiveIntegerField(default=0, null=False, blank=False)
