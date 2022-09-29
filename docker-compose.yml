@@ -10,9 +10,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
   web:
+    image: django_web
     build: .
-    sh -c "python manage.py collectstatic --noinput &&
-             python manage.py migrate &&
+    command: sh -c "python manage.py migrate &&
              python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/code
