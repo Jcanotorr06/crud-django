@@ -18,6 +18,8 @@ urlpatterns = [
     path('producto/<int:id_producto>', views.producto, name="producto"),
     #Ver Categorias
     path('categorias', views.categorias, name="categorias"),
+    #Añadir Categoria
+    path('add_categorias', views.add_categorias, name="add_categorias"),
     #Editar Categorias
     path('editar_categorias', views.editar_categorias, name="editar_categorias"),
     #Eliminar Categorias
