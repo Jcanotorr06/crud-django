@@ -10,10 +10,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
   web:
-    image: django_web
+    image: jcanotorr06/crud_django
     build: .
-    command: sh -c "python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:8000"
+    command: ["./wait-for-it.sh", "db:5432", "--", "bash", "launch.sh"]
     volumes:
       - .:/code
     ports:
